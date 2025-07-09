@@ -1,0 +1,276 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Auth Service API",
+    "description": "API documentation for the Authentication Microservice. This service handles user registration with OTP verification, account creation, and secure JWT-based login.",
+    "version": "1.0.1"
+  },
+  "host": "localhost:6001",
+  "basePath": "/",
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/api/user/register": {
+      "post": {
+        "summary": "Register user (send OTP)",
+        "description": "Initiates user registration by validating input, checking for duplicate users, and sending an OTP to the email address.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "John Doe" },
+                "email": { "type": "string", "example": "john@example.com" },
+                "password": { "type": "string", "example": "Password123!" }
+              },
+              "required": ["name", "email", "password"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "OTP sent to email. Please verify your account."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or user already exists."
+          }
+        }
+      }
+    },
+    "/api/user/verify-registration": {
+      "post": {
+        "summary": "Verify OTP and create account",
+        "description": "Verifies the provided OTP and creates the user account in the database.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "John Doe" },
+                "email": { "type": "string", "example": "john@example.com" },
+                "password": { "type": "string", "example": "Password123!" },
+                "otp": { "type": "string", "example": "123456" }
+              },
+              "required": ["name", "email", "password", "otp"]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User registered successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean", "example": true },
+                "message": {
+                  "type": "string",
+                  "example": "User registered successfully!"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid OTP or validation error."
+          }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "summary": "User login",
+        "description": "Authenticates user credentials, issues JWT tokens, and sets them as HTTP-only cookies.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "string", "example": "john@example.com" },
+                "password": { "type": "string", "example": "Password123!" }
+              },
+              "required": ["email", "password"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Login successfully!"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "email": {
+                      "type": "string",
+                      "example": "john@example.com"
+                    },
+                    "name": { "type": "string", "example": "John Doe" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials."
+          }
+        }
+      }
+    },
+    "/api/user/forgot-password": {
+      "post": {
+        "summary": "Forgot password (send OTP)",
+        "description": "Validates email and sends an OTP for resetting the password. Enforces spam and cooldown restrictions.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "string", "example": "john@example.com" }
+              },
+              "required": ["email"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP sent to email for password reset.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "OTP sent to email. Please verify your account."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or user does not exist."
+          }
+        }
+      }
+    }
+  },
+
+  "/api/user/verify-forgot-password": {
+    "post": {
+      "tags": ["Auth"],
+      "summary": "Verify OTP for forgot password",
+      "description": "Verifies the OTP sent to the user's email during the forgot password flow.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "user@example.com"
+                },
+                "otp": {
+                  "type": "string",
+                  "example": "1234"
+                }
+              },
+              "required": ["email", "otp"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OTP verified successfully. User can now reset password.",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "OTP verified. you can now reset your password."
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation or OTP error."
+        }
+      }
+    }
+  },
+  "/api/user/reset-password": {
+    "post": {
+      "tags": ["Auth"],
+      "summary": "Reset user password after OTP verification",
+      "description": "Resets the user's password once the OTP is verified.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "user@example.com"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "example": "newStrongPassword123"
+                }
+              },
+              "required": ["email", "newPassword"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Password reset successful.",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "Password reset successfully."
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation or user not found error."
+        }
+      }
+    }
+  },
+  "definitions": {},
+  "securityDefinitions": {},
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication related endpoints"
+    }
+  ]
+}
