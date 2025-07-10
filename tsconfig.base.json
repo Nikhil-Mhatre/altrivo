@@ -5,7 +5,9 @@
     "emitDeclarationOnly": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["es2022"],
+    "lib": [
+      "es2022"
+    ],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "noEmitOnError": true,
@@ -18,8 +20,12 @@
     "target": "es2022",
     "baseUrl": ".",
     "paths": {
-      "@packages/*": ["packages/*"],
-      "@apps/*": ["apps/*"]
+      "@apps/*": [
+        "apps/*"
+      ],
+      "@packages/*": [
+        "packages/*"
+      ]
     }
   }
 }
