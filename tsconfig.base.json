@@ -20,6 +20,12 @@
     "target": "es2022",
     "baseUrl": ".",
     "paths": {
+      "@altrivo/ui-library": [
+        "libs/ui-library/src/index.ts"
+      ],
+      "@altrivo/ui-library/*": [
+        "libs/ui-library/src/*"
+      ],
       "@apps/*": [
         "apps/*"
       ],
