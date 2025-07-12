@@ -22,8 +22,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
-        mono: ["var(--font-geist-mono)", ...fontFamily.mono],
+        display: ["var(--font-playfair)", "serif"], // for big display headings
+        serif: ["var(--font-lora)", "serif"], // for body text or standard headings
+        code: ["var(--font-fira-code)", "monospace"], // for code blocks
       },
       colors: {
         border: "hsl(var(--border))",
@@ -97,5 +98,5 @@ module.exports = {
       },
     },
   },
-  plugins: [ require("tailwindcss-animate"),],
+  plugins: [require("tailwindcss-animate")],
 };

@@ -11,3 +11,5 @@
     twitterUrl: "https://twitter.com/eshop",
 
 ### in apps\auth-service\src\utils\auth.helper.ts
+
+## TODO: Modify OTP verifcation UI

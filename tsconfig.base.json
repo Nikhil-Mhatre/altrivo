@@ -31,7 +31,10 @@
       ],
       "@packages/*": [
         "packages/*"
-      ]
+      ],
+      "@user-frontend/*": [
+        "apps/user-frontend/src/*"
+      ],
     }
   }
 }
